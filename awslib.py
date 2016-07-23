@@ -1,14 +1,20 @@
 import boto
 
+import json
 from os import path
 from boto.s3.key import Key
 
 class AwsHelper:
+	"""
+		wrappe around aws python lib
+	"""
 
-	def __init__(self,bucket, aws_key, aws_secret):
-		self.bucket_name = bucket
-		self.conn = boto.connect_s3(aws_key,aws_secret)
-		self.bucket = self.conn.get_bucket(self.bucket_name)
+	def __init__(self,config_file):
+		with open(config_file,'r') as f:
+			json_config = json.load(f)
+			self.bucket_name = json_config['bucket']
+			self.conn = boto.connect_s3(json_config['aws_key'],json_config['aws_secret'])
+			self.bucket = self.conn.get_bucket(self.bucket_name)
 
 
 	def upload(self,file):
@@ -23,6 +29,6 @@ if __name__ == '__main__':
 	key = ""
 	secret=""
 
-	aws = AwsHelper(key,secret)
+	aws = AwsHelper('awskeys.json')
 	aws.upload(fn)
 
